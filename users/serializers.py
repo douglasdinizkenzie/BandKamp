@@ -28,17 +28,10 @@ class UserSerializer(serializers.ModelSerializer):
             "last_name",
             "is_superuser",
         ]
-        extra_kwargs = {"password": {"write_only": True}}
+        extra_kwargs = {
+            "password": {"write_only": True},
+            "is_superuser": {"read_only": True},
+        }
 
     def create(self, validated_data: dict) -> User:
         return User.objects.create_superuser(**validated_data)
-
-    def update(self, instance: User, validated_data: dict) -> User:
-        for key, value in validated_data.items():
-            if key == "password":
-                value = make_password(value)
-            setattr(instance, key, value)
-
-        instance.save()
-
-        return instance
